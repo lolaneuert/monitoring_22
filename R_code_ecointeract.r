@@ -49,10 +49,30 @@ pairs(~ cadmium + copper + lead + zinc, data = meuse) # this way you specify the
 pairs(~ cadmium + lead + zinc, data = meuse)
 
 # now you want to change the color of the graphs
-pairs(~ cadmium + lead + zinc, data = meuse, col="darkorange2")
+pairs(~ cadmium + lead + zinc, data = meuse, col = "darkorange2")
  
 # to change the symbol in the graphs
-pairs(~ cadmium + lead + zinc, data = meuse, col="darkorange2", pch =23)
+pairs(~ cadmium + lead + zinc, data = meuse, col = "darkorange2", pch = 23)
 
 # and increase the symbol size: 2 = double the size 
-pairs(~ cadmium + lead + zinc, data = meuse, col="darkorange2", pch =23, cex=2)
+pairs(~ cadmium + lead + zinc, data = meuse, col = "darkorange2", pch = 23, cex = 2)
+
+
+# Spatial data analysis
+
+# we want to use the dataset meuse for spatial analysis
+coordinates(meuse) = ~x+y  # the function ~coordinates() either creates a spatial object, or in this case retrieves its coordinates
+
+# the function ~plot() now shows how the data is spatially distributed
+plot(meuse) 
+
+# the function ~spplot() shows how variables, in this case elements like cadmium, lead etc. are concentrated spatially
+spplot(meuse, "cadmium", main="Concentration of Cadmium") # plots the concentration of cadmium
+spplot(meuse, "copper", main="Concentration of Copper") # plots the concentration of copper
+
+# to see two variables use c (=concatenate) to attach both variables
+spplot(meuse, c("copper","zinc"))
+
+# to create a bubble-plot of spatial data use function ~bubble(), use ~col("") to edit the color of the bubble symbol
+bubble(meuse, "zinc")
+bubble(meuse, "lead", col="darkorchid4")
