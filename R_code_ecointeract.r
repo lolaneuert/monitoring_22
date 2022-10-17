@@ -39,3 +39,20 @@ plot(cadmium, zinc) # now you can simply plot c vs z and R looks in meuse for it
 
 # to create a scatterplot matrice with all the variables plotted against each other use function -pairs()
 pairs(meuse) # shows mirrored image of all 14 variables: matrix of 14 x 13: 180 potential relationships, all plotted at once, very functional
+
+# 2 options to pair just a few of the variables against each other
+# to create a scatterplot matrix with only the element variables cadmium, copper, lead and zinc
+pairs(meuse[,3:6]) # this way you specify that you only want the variables in columns 3-6 to be plotted
+pairs(~ cadmium + copper + lead + zinc, data = meuse) # this way you specify the wanted variables by their column names
+
+# to make the graph more appealing visually you only want cadmium, lead and zinc
+pairs(~ cadmium + lead + zinc, data = meuse)
+
+# now you want to change the color of the graphs
+pairs(~ cadmium + lead + zinc, data = meuse, col="darkorange2")
+ 
+# to change the symbol in the graphs
+pairs(~ cadmium + lead + zinc, data = meuse, col="darkorange2", pch =23)
+
+# and increase the symbol size: 2 = double the size 
+pairs(~ cadmium + lead + zinc, data = meuse, col="darkorange2", pch =23, cex=2)
