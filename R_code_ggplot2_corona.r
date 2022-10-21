@@ -1,4 +1,5 @@
-# this file is used to analyse the (initial spatial spread) of the coronavirus using graphs from the package ggplot2
+# this file is used to analyse the initial spatial spread of the coronavirus using graphs from the package ggplot2
+# 1. getting started with the package ggplot2 first
 
 install.packages("ggplot2")
 library(ggplot2)
@@ -36,4 +37,28 @@ ggplot(corona, aes(x = virus, y = death)) + geom_polygon()
 
 # you can use ggplot2 to connect multiple geometric shapes simply by adding more functions with + 
 ggplot(corona, aes(x = virus, y = death)) + geom_point + geom_line + geom_polygon()
+
+# 2. now on to real data
+
+# recall the relevant packages using function ~library()
+library(ggplot2)
+library(spatstat)
+
+# set a working directory using function ~setwd() for R to save all documents, files, objects etc in: in this case it is in the folder monitoring (see path below)
+setwd("C:/RStudio/monitoring")
+
+# now we can import the datafolder (downloaded from virtuale into wd set above) using the function ~read.table() to import data directly from the wd
+covid <- read.table("covid_agg.csv", header = TRUE)  # to import the head of the doc as a head in R aswell set the header = TRUE
+
+# get a first look at the data we just imported
+covid # prints the whole dataset in the console
+head(covid) # prints the first few lines of the dataset in the console
+summary(covid) # calculates the basic statistic parameters for the dataset
+
+# use function ~ggplot() to visualize the data from the set, we are using lonand lat as x and y 
+ggplot(covid, aes(x = lon, y = lat)) + geom_point()
+# set the size of the points to cases so the symbol increases with case number at the different locations
+ggplot(covid, aes(x = lon, y = lat, size = cases)) + geom_point()
+
+
 
