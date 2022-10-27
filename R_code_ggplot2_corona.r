@@ -42,7 +42,7 @@ ggplot(corona, aes(x = virus, y = death)) + geom_point + geom_line + geom_polygo
 
 # recall the relevant packages using function ~library()
 library(ggplot2)
-library(spatstat)
+library(spatstat) # spatial statistics
 
 # set a working directory using function ~setwd() for R to save all documents, files, objects etc in: in this case it is in the folder monitoring (see path below)
 setwd("C:/RStudio/monitoring")
@@ -61,23 +61,27 @@ ggplot(covid, aes(x = lon, y = lat)) + geom_point()
 ggplot(covid, aes(x = lon, y = lat, size = cases)) + geom_point()
 
 # let's see the density of the coronavirus cases 
-# use function ~ppp() from the spatstat package to create a planar point pattern  
+# use function ~ppp() from the spatstat package to create a planar point pattern, which explains to R that we are working on a geographical lattice (lat and lon) as well as explain the extent  
 attach(covid) # let's first attach the dataset to make sepcification easier (don't need $ to specify column names lat ,lon etc.)
-covid_planar <- ppp(lon, lat, c(-180, 180), c(-90, 90)) # lon and lat are x and y, function ~c() is used to tell R the range to be used
+covid_planar <- ppp(lon, lat, c(-180, 180), c(-90, 90)) # lon and lat are x and y, function ~c() is used to tell R the range to be used in the form of an array
+plot(covid_planar) # take a look at the ppp object created
 
 # to now print a density map of the case numbers by country use function ~density()
 density_map <- density(covid_planar)
 
-plot(density_map) # simply plot the density of cases calculated above
-points(covid_planar) # add the points of the cases for each country
+plot(density_map) # simply plot the density of cases calculated above (plot overrides previous function/map)
+points(covid_planar, pch = 19) # add the points of the cases for each country (points adds object to the previous function/map)
 
-# to visually change the map create a list of colors using function ~colorRampPalette(c())
-colors <- colorRampPalette(c('blue','yellow','orange','red','magenta'))(100)
+# to visually change the map create a list/legend of colors using function ~colorRampPalette(c()) over a 100 step gradient (?)
+colors <- colorRampPalette(c('blue4', 'cadetblue4', 'darkgoldenrod2', 'tan2', 'sienna3', 'firebrick4', 'violetred4', 'purple4'))(100)
 plot(density_map, col = colors) # now specify the color by setting col = the list created above
-points(covid_planar) # add the points of cases for each country
+points(covid_planar, pch = 5, ) # add the points of cases for each country
 
 # next we want to add the countries to the map
 # install  and activate necessary packages
 install.packages("rgdal")
 library(rgdal)
+
+# after downloading the folder ne 10m coastline, open it using function ~readOGR, which reads a vector map into a spatial object
+coastlines <- readOGR("ne_10m_coastline.shp")
 
