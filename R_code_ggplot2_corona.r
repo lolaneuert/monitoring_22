@@ -85,3 +85,41 @@ library(rgdal)
 # after downloading the folder ne 10m coastline, open it using function ~readOGR, which reads a vector map into a spatial object
 coastlines <- readOGR("ne_10m_coastline.shp")
 
+# now to combine the density map and the country borders we create a new color gradient, plot the density map and insert the points from covid_planar as well as the coastlines
+cl <- colorRampPalette(c('lightskyblue4','chartreuse4','goldenrod3','lightsalmon3','sienna4'))(100) # 
+plot(density_map, col = cl)  # plot the density map
+points(covid_planar, pch = 1, col = 'blue', cex = 0.8) # add the points
+plot(coastlines, add = TRUE) # add the coastline
+
+# if we want to download this map we can for example do it in png as well as pdf format by using function ~png("") or pdf("")
+png("cov_density_countries.png")
+    c2 <- colorRampPalette(c('steelblue','slategray','seashell2','rosybrown','navajowhite4'))(100)
+    plot(density_map, col = c2) 
+    points(covid_planar, pch = 16, col = 'black', cex = 1)
+    plot(coastlines, add = TRUE) 
+    dev.off() # closes the window with the map
+
+pdf("cov_density_countries.pdf")
+    c3 <- colorRampPalette(c('mistyrose3','pink4','violetred','red4','indianred'))(100)  
+    plot(density_map, col = c3) 
+    points(covid_planar, pch = 4, col = 'black', cex = 1)
+    plot(coastlines, add = TRUE) 
+    dev.off()
+
+# but these maps simply show the density based on the points, obviously in Europe there is a high country density = highest density of points
+# however the parameter abundance is much more informative, as it actually interpolates the number of cases
+
+# 3. we can do this using the function ~marks(), which assigns data to the points given in covid_planar
+attach(covid)
+marks(covid_planar) <- cases  # cases is the name of the relevant variable in the original array covid, which we attach here, as covid_planar is simply a list of points
+
+# using the function ~Smooth it interpolates the point data given in covid_planar and assigns it the new name map_cases
+map_cases <- Smooth(covid_planar
+                                      
+# to plot this map we use function ~plot
+plot(map_cases, col = c2) 
+points(covid_planar, pch = 19) # add points
+plot(coastlines, add = T) # adds coastlines                   
+                    
+                    
+                    
