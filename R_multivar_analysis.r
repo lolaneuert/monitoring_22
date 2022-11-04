@@ -31,15 +31,14 @@ plot(multivar) # use function ~plot() to visualize the matrix created by decoran
 # to now add the biome labels in the decorana graph first use function ~attach()) to attach the second table biomes_types
 # then use function ~ordiellipse() to add a circle around those points who are in the same biome, define in which table; type to define which kind of ellipse, here factor = biomes; what colors; kind = ehull to make a specific shape of ellipse; and lwd = linewidth  
 attach(biomes_types)
-ordiellipse(multivar, type, col=c("cornsilk4","deeppink3","darkseagreen4","mediumpurple2"), kind = "ehull", lwd=2)
-# now use function ~ordispider()  to attach the labels to the circles
+ordiellipse(multivar, type, col=c("dodgerblue4","deeppink3","darkseagreen4","mediumpurple2"), kind = "ehull", lwd=2)
+# now use function ~ordispider()  to attach the labels to the circles in a net form (like a spider :D)
 attach(biomes_types)
-ordispider(multivar, type, col=c("cornsilk4","deeppink3","darkseagreen4","mediumpurple2"), label = T)
+ordispider(multivar, type, col=c("dodgerblue4","deeppink3","darkseagreen4","mediumpurple2"), label = T)
 
 # to save the plot in a pdf format use function ~pdf("")
 pdf("multivar.pdf")
 plot(multivar)
-ordiellipse(multivar, type, col=c("cornsilk4","deeppink3","darkseagreen4","mediumpurple2"), kind = "ehull", lwd=2)
-ordispider(multivar, type, col=c("cornsilk4","deeppink3","darkseagreen4","mediumpurple2"), label = T)
+ordiellipse(multivar, type, col=c("dodgerblue4","deeppink3","darkseagreen4","mediumpurple2"), kind = "ehull", lwd=2)
+ordispider(multivar, type, col=c("dodgerblue4","deeppink3","darkseagreen4","mediumpurple2"), label = T)
 dev.off()
-
