@@ -88,3 +88,29 @@ hist_1992 / hist_2006 # shows you the first plot on top of the second one
 
 # for this we could also use the function ~grid.arrange from the gridExtra package, specifying the two plots as well as the number of rows
 grid.arrange(hist_1992, hist_2006, nrow=1)
+       
+# look at different bands using ggplot
+l1992
+plotRGB(l1992, r = 1, g = 2 , b = 3, stretch = "lin") # plot it in RGB, band 1 is the NIR
+ggRGB(l1992, 1, 2, 3) # this function does the same as function ~plotRGB without specifying as many details
+
+# you can also plot the DVI 
+plot(dvi1992) # this one we calculated above
+ggplot() + geom_raster(dvi1992, mapping = aes(x = x, y = y, fill = layer))
+# this time we use a new geometry: geom_raster, specify which raster, in this case the dvi and specify the aes, but we need to type mapping in front
+# for fill we specify the layer name, which is however called layer (check in dvi1992)
+
+# using the package viridis we use color palettes that are suitable for people with daltonism (the palette turbo is not good for them)
+dvi_gg_1992 <- ggplot() + geom_raster(dvi1992, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "inferno")
+# the function ~scale_fill_viridis allows you to choose the palette, this time we choose viridis
+
+# repeat for the 2006 image
+dvi_gg_2006 <- ggplot() + geom_raster(dvi2006, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "magma")
+
+# use the package patchwork to stack them one beside the other
+dvi_gg_1992 + dvi_gg_2006
+
+        
+        
+        
+        
