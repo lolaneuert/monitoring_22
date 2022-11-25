@@ -101,11 +101,11 @@ ggplot() + geom_raster(dvi1992, mapping = aes(x = x, y = y, fill = layer))
 # for fill we specify the layer name, which is however called layer (check in dvi1992)
 
 # using the package viridis we use color palettes that are suitable for people with daltonism (the palette turbo is not good for them)
-dvi_gg_1992 <- ggplot() + geom_raster(dvi1992, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "inferno")
+dvi_gg_1992 <- ggplot() + geom_raster(dvi1992, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "inferno") + ggtitle ("Multispectral DVI 1992")
 # the function ~scale_fill_viridis allows you to choose the palette, this time we choose viridis
 
 # repeat for the 2006 image
-dvi_gg_2006 <- ggplot() + geom_raster(dvi2006, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "magma")
+dvi_gg_2006 <- ggplot() + geom_raster(dvi2006, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "magma") + ggtitle ("Multispectral DVI 2006")
 
 # use the package patchwork to stack them one beside the other
 dvi_gg_1992 + dvi_gg_2006
