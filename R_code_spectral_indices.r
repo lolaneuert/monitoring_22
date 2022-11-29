@@ -1,8 +1,9 @@
 # This script shows the basics of vegetiation indices calculation from remote sensing data
 
 # activate necessary libraries
-library(raster
+library(raster)
 library(RStoolbox)
+library(ggplot2)
 
 # images from https://earthobservatory.nasa.gov/images/35891/deforestation-in-mato-grosso-brazil
 # load images
@@ -17,18 +18,18 @@ plotRGB(l1992, r = 1, g = 2, b = 3, stretch = "lin") # create a different stack 
 # NIR 
 par(mfrow = c(2,1)) # use function ~par(mfrow = c()) to add frames one on top of each other
 plotRGB(l1992, r = 1, g = 2, b = 3, stretch = "lin")
-plotRGB(l1992, r = 1, g = 2, b = 3, stretch = "lin")
+plotRGB(l2006, r = 1, g = 2, b = 3, stretch = "lin")
 
 # NDVI
 dvi1992 <- l1992[[1]] - l1992[[2]] # create the ndvi for the 1992 image by subtracting band 2 from band 1
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black"))(100)  # create a color palette         
 plot(dvi1992, col = cl)
 
-dvi2006 <- l2006[[1]] - l1992[[2]] # create the ndvi for the 2006 image in the same way
+dvi2006 <- l2006[[1]] - l2006[[2]] # create the ndvi for the 2006 image in the same way
 
 # plot both ndvis one above each other
 par(mfrow = c(2,1))  
-plot(dvi1992, col = cl)
+plot(dvi1992, col = cl
 plot(dvi2006, col = cl)
 
 
