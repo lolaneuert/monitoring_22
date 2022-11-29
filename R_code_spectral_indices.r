@@ -4,6 +4,12 @@
 library(raster)
 library(RStoolbox)
 library(ggplot2)
+install.packages("patchwork")
+library(patchwork)
+install.packages("gridExtra")
+library(gridExtra)
+install.packages("viridis")
+library(viridis)
 
 # images from https://earthobservatory.nasa.gov/images/35891/deforestation-in-mato-grosso-brazil
 # load images
