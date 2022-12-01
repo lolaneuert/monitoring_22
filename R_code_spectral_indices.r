@@ -111,10 +111,20 @@ ggplot() + geom_raster(dvi1992, mapping = aes(x = x, y = y, fill = layer))
 dvi_gg_1992 <- ggplot() + geom_raster(dvi1992, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "inferno") + ggtitle ("Multispectral DVI 1992")
 # the function ~scale_fill_viridis allows you to choose the palette, this time we choose viridis
 
-# repeat for the 2006 image
-dvi_gg_2006 <- ggplot() + geom_raster(dvi2006, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "magma") + ggtitle ("Multispectral DVI 2006")
+# repeat all these steps for the 2006 image
+l2006
+plotRGB(l2006, r = 1, g = 2 , b = 3, stretch = "lin") # plot it in RGB, band 1 is the NIR
+ggRGB(l2006, 1, 2, 3) # this function does the same as function ~plotRGB without specifying as many details
 
-# use the package patchwork to stack them one beside the other
+# plot the DVI
+plot(dvi2006) # this one we calculated above
+ggplot() + geom_raster(dvi2006, mapping = aes(x = x, y = y, fill = layer))
+
+# display the DVI using the viridis color palettes
+dvi_gg_2006 <- ggplot() + geom_raster(dvi2006, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "magma") + # look at different bands using ggplot
+
+  
+# use the package patchwork to stack the 1992 and the 2006 image beside each other
 dvi_gg_1992 + dvi_gg_2006
 
         
