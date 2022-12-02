@@ -1,7 +1,8 @@
-# this script calculates the ice melt in island using remote sensing data
+# this script shows the land surface temperature (ice melt) in greenland using remote sensing data
 
 # activate necessary packages
 install.packages("rasterVis")
+install.packages("colorist")
 library(raster)
 library(ggplot2)
 library(RStoolbox)
@@ -9,6 +10,7 @@ library(viridis)
 library(patchwork)
 library(rasterVis)
 library(rgdal)
+library(colorist)
 
 # import data using the function ~raster() (single images of land surface temperature)
 lst_2000 <- raster("lst_2000.tif")
@@ -57,3 +59,5 @@ dif_gg
 
 # plot 2000, 2015 and their difference next to each other
 temp2000 + temp2015 + dif_gg
+
+# one could use package ~colorist to display this data
