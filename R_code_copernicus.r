@@ -1,6 +1,6 @@
 # this script is on the topic of copernicus remote imaging data and how to analyse it in R
 
-Copernicus set:
+# Copernicus set:
 # https://land.copernicus.vgt.vito.be/PDF/portal/Application.html
 # Register and Login
 # Download data from Cryosphere (Snow Cover Extent 1km v1- 21.12.2020)
