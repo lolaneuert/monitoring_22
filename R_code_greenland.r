@@ -36,3 +36,24 @@ rlist <- list.files(pattern = "lst") # this creates a list of the 4 files contai
 
 # the function ~lapply() can now be used on this list, specifying the list in place of x and then the wanted function that lapply should apply
 imported_lst <- lapply(rlist, raster)
+
+# use the function ~stack() to create a stacked set of raster layers
+Temp_Gr <- stack(imported_lst)
+Temp_Gr
+plot(Temp_Gr)
+
+# we can also use the stacked data to create individual layers if we specify them in squared brackets and the fill parameter
+temp2000 <- ggplot() + geom_raster(Temp_Gr[[1]], mapping = aes(x = x, y = y, fill = lst_2000)) + scale_fill_viridis(option = "inferno", direction = -1) + ggtitle("LST Greenland 2000")
+temp2015 <- ggplot() + geom_raster(Temp_Gr[[4]], mapping = aes(x = x, y = y, fill = lst_2015)) + scale_fill_viridis(option = "inferno", direction = -1) + ggtitle("LST Greenland 2015")
+
+# add them together in one plot
+temp2000 + temp2015
+
+# let's calculate the temp difference between these two images by subtracting the older from the more recent layer (specify inside the Temp_Gr stack)
+dif_Temp <- Temp_Gr[[4]] - Temp_Gr[[1]]
+# and plot it like before
+dif_gg <- ggplot() + geom_raster(dif_Temp, mapping = aes(x = x, y = y, fill = layer)) + scale_fill_viridis(option = "plasma", direction = -1) + ggtitle("Difference in LST Greenland 2000-2015")
+dif_gg
+
+# plot 2000, 2015 and their difference next to each other
+temp2000 + temp2015 + dif_gg
