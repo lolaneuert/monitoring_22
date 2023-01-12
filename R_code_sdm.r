@@ -44,4 +44,39 @@ lst # this shows us there are 4 files with an asc extension in the folder: eleva
 
 # we create a stack of these files using the function ~stack
 preds <- stack(lst)
-plot(preds)
+# create a color palette
+cl <- colorRampPalette(c("purple", "red", "orange", "yellow")) (100)
+plot(preds, col=cl)
+
+# plot predictors and occurrences
+plot(preds$elevation, col=cl)
+points(species[species$Occurrence == 1,], pch=15)
+
+plot(preds$temperature, col=cl)
+points(species[species$Occurrence == 1,], pch=15)
+
+plot(preds$precipitation, col=cl)
+points(species[species$Occurrence == 1,], pch=15)
+
+plot(preds$vegetation, col=cl)
+points(species[species$Occurrence == 1,], pch=15)
+
+
+# we want to establish relationships between the point data and the predictors to complete the model
+# first we set the training data (objects = species, points) and the predictors for the sdm into a new object containing all the data
+datasdm <- sdmData(train=species, predictors=preds)
+
+# now run the model using the function ~sdm, plotting the occurrence of the frogs (nr of records = 200) with the 4 predictors
+# the used method is glm (generalized linear model) with all variables together
+m1 <- sdm(Occurrence ~ elevation + precipitation + temperature + vegetation, data = datasdm, methods = "glm")
+
+# make the raster output layer using the function ~predict, this predicts the spread of the species based on the input data
+p1 <- predict(m1, newdata = preds)
+
+# plot the output using the color from above, then add the point data of the actual species presence
+plot(p1, col=cl)
+points(species[species$Occurrence == 1,], pch = 17)
+
+# add to the stack, so one can see all rasters together
+s1 <- stack(preds, p1)
+plot(s1, col=cl)
