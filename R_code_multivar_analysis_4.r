@@ -1,5 +1,4 @@
-# community ecology example using multivariate analysis in R
-
+# community ecology using multivariate analysis in R
 
 # set a working directory using function ~setwd() for R to save all documents, files, objects etc in: in this case it is in the folder monitoring (see path below)
 setwd("C:/RStudio/monitoring")
