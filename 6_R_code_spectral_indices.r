@@ -1,4 +1,4 @@
-# This script shows the basics of vegetiation indices calculation from remote sensing data
+This script shows the basics of vegetiation indices calculation from remote sensing data
 
 # activate necessary libraries
 library(raster)
@@ -21,12 +21,12 @@ l2006 <- brick("defor2.png") # load the image using the function ~brick()
 l2006 # for a quick look at image-information (here bands: 1 NIR, 2 red, 3 green)
 plotRGB(l1992, r = 1, g = 2, b = 3, stretch = "lin") # create a different stack of bands: so NIR displayed in red, red in green and green in blue channel)
 
-# NIR 
+##### NIR 
 par(mfrow = c(2,1)) # use function ~par(mfrow = c()) to add frames one on top of each other
 plotRGB(l1992, r = 1, g = 2, b = 3, stretch = "lin")
 plotRGB(l2006, r = 1, g = 2, b = 3, stretch = "lin")
 
-# NDVI
+##### NDVI (difference vegetation index DVI)
 dvi1992 <- l1992[[1]] - l1992[[2]] # create the ndvi for the 1992 image by subtracting band 2 from band 1
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black"))(100)  # create a color palette         
 plot(dvi1992, col = cl)
@@ -35,14 +35,17 @@ dvi2006 <- l2006[[1]] - l2006[[2]] # create the ndvi for the 2006 image in the s
 
 # plot both ndvis one above each other
 par(mfrow = c(2,1))  
-plot(dvi1992, col = cl
+plot(dvi1992, col = cl)
 plot(dvi2006, col = cl)
+     
+# to look at changes in ndvi over time
+dvi_diff = dvi1992 - dvi2006
+c2 <- colorRampPalette(c("cyan", "orange", "sienna4", "black"))(100)
+plot(dvi_diff, col=c2)
 
-
-
-# classification of spectral images: see how many trees have been cut down in the amazon rainforest
+#### classification of spectral images: see how many trees have been cut down in the amazon rainforest
 # classification 1992 (deforestation period d1)
-# unsupervised classification  = ...
+# unsupervised classification  = generates clusters based on similar spectral characteristics inherent in the image. Then, you classify each cluster without providing training samples of your own
 
 # threshold for trees in the 1992 image
 d1c <- unsuperClass(l1992, nClasses = 2) # use function ~unsuperClass() to do an unsupervised clustering of Raster* data using kmeans clustering
@@ -76,8 +79,7 @@ percent_2006 <- c(52.08, 47.92) # and the percentages for the 2006 image
 
 proportions <- data.frame(landcover, percent_1992, percent_2006) # create a data frame containing these columns 
 proportions
-
-        
+       
 # create a histogram plot using the ggplot2 library for the 1992 image
 hist_1992 <- ggplot(proportions, aes(x = landcover, y = percent_1992, color = landcover)) + geom_bar(stat = "identity", fill = "darkseagreen")
 hist_1992 # plot it 
@@ -128,6 +130,36 @@ dvi_gg_2006 <- ggplot() + geom_raster(dvi2006, mapping = aes(x = x, y = y, fill 
 dvi_gg_1992 + dvi_gg_2006
 
         
-        
-        
-        
+##### NDVI
+# the range of DVI (8 bit)is -255 to 255, whilst NDVI is -1 to 1, at (16bit) the range of DVI is -65535 to 65535, but NDVI is still -1 to 1
+# this means that we can use NDVI to compare images with a different radiometric resolution
+
+# first create the NDVI for 1992
+ndvi1992 = dvi1992 / (l1992[[1]] + l1992[[2]])
+# and now plot it using above color scheme
+plot(ndvi1992, col = c1)
+
+# now we create a multiframe with the ~plotRGB  on the top and the ndvi on the bottom
+par(mfrow = c(2,1))
+plotRGB(l1992, r = 1, g = 2, b = 3, stretch = "lin")
+plot(ndvi1992, col = c1)
+
+# now repeat for the 2006 image
+ndvi2006 = dvi2006 / (l2006[[1]] + l2006[[2]])
+# and now plot it using above color scheme
+plot(ndvi2006, col = c1)
+
+# now we create a multiframe with both ndvis
+par(mfrow = c(2,1))
+plot(ndvi1992, col = c1)
+plot(ndvi2006, col = c1) # we can see a decrease in ndvi over the years
+
+library(RStoolbox)
+# there is the option to create automatic spectral indices busing the ~spectralIndices function
+si1992 <- spectralIndices(l1992, green=3, red=2, nir=1)
+plot(si1992,col=cl)
+
+si2006 <- spectralIndices(l2006, green=3, red=2, nir=1)
+plot(si2006,col=cl)
+
+
