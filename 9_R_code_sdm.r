@@ -61,7 +61,7 @@ points(species[species$Occurrence == 1,], pch=15)
 plot(preds$vegetation, col=cl)
 points(species[species$Occurrence == 1,], pch=15)
 
-
+#### create model
 # we want to establish relationships between the point data and the predictors to complete the model
 # first we set the training data (objects = species, points) and the predictors for the sdm into a new object containing all the data
 datasdm <- sdmData(train=species, predictors=preds)
