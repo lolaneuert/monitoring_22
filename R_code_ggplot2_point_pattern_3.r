@@ -1,3 +1,5 @@
+
+### 3) ggplot2 and interpolation of case data
 # this file is used to analyse the initial spatial spread of the coronavirus using graphs from the package ggplot2
 ###### 1st getting started with the package ggplot2
 
@@ -93,18 +95,18 @@ plot(coastlines, add = TRUE) # add the coastline
 
 # if we want to download this map we can for example do it in png as well as pdf format by using function ~png("") or pdf("")
 png("cov_density_countries.png")
-    c2 <- colorRampPalette(c('steelblue','slategray','seashell2','rosybrown','navajowhite4'))(100)
-    plot(density_map, col = c2) 
-    points(covid_planar, pch = 16, col = 'black', cex = 1)
-    plot(coastlines, add = TRUE) 
-    dev.off() # closes the window with the map
+c2 <- colorRampPalette(c('steelblue','slategray','seashell2','rosybrown','navajowhite4'))(100)
+plot(density_map, col = c2) 
+points(covid_planar, pch = 16, col = 'black', cex = 1)
+plot(coastlines, add = TRUE) 
+dev.off() # closes the window with the map
 
 pdf("cov_density_countries.pdf")
-    c3 <- colorRampPalette(c('mistyrose3','pink4','violetred','red4','indianred'))(100)  
-    plot(density_map, col = c3) 
-    points(covid_planar, pch = 4, col = 'black', cex = 1)
-    plot(coastlines, add = TRUE) 
-    dev.off()
+c3 <- colorRampPalette(c('mistyrose3','pink4','violetred','red4','indianred'))(100)  
+plot(density_map, col = c3) 
+points(covid_planar, pch = 4, col = 'black', cex = 1)
+plot(coastlines, add = TRUE) 
+dev.off()
 
 ### interpolate case data 
 # but these maps simply show the density based on the points, obviously in Europe there is a high country density = highest density of points
@@ -115,17 +117,25 @@ attach(covid)
 marks(covid_planar) <- cases  # cases is the name of the relevant variable in the original array covid, which we attach here, as covid_planar is simply a list of points
 
 # using the function ~Smooth it interpolates the point data given in covid_planar and assigns it the new name map_cases
-map_cases <- Smooth(covid_planar
-                                      
+map_cases <- Smooth(covid_planar)
+                    
 # to plot this map we use function ~plot
 plot(map_cases, col = c2) 
 points(covid_planar, pch = 19) # add points
 plot(coastlines, add = T) # adds coastlines    
-
-# next we download the package sf to start smoothing 
-install.packages("sf")
+                    
+# next we download the package sf
+install.packages("sf") # used for spatial vector data
 library(sf)
 
-# create 
-                    
-                    
+# use function ~st_as_st() to convert the covid object to an sf object(extends data.frame-like objects with a simple feature list column) 
+s_points <- st_as_sf(covid, coords = c("lon", "lat"))
+
+# create a new color palette
+c1 <- colorRampPalette(c("antiquewhite4", "aquamarine4", "darkslategray", "coral4", "firebrick3"))(100)
+plot(map_cases, col = c1) # plot the smoothed case map
+plot(s_points, cex = s_points$cases/10000, col = "purple4", lwd = 3, add = T) # add circles around the countries with high case numbers, depending on their absolute value
+
+# now we add on the coastlines to the smoothed map above
+coastlines <- readOGR("ne_10m_coastline.shp")
+plot(coastlines, add = T)
