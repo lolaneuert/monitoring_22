@@ -105,10 +105,6 @@ plot(coastlines_3035_st, add = TRUE)
 dev.off() # closes the window with the map
 
 
-# we want to extract the exact elevation data for the points where the pine is found
-DEM_pinus <- extract (dem_alps, dat_pinus_cembra)
-
-
 
 
 ### SOIL WATER INDEX DATA'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -150,17 +146,61 @@ plot(dat_pinus_cembra, cex = 0.5, col="white", add = TRUE) # add on the species 
 plot(coastlines_3035_st, col = "white", add = TRUE) # add on the coastlines
 dev.off()
 
-# we want to extract the exact soil water data for the points where the pine is found
-SWI_pinus <- extract (swi_crop_alps, dat_pinus_cembra)
-
 
 
 
 ### LAND SURFACE TEMPERATURE DATA''''''''''''''''''''''''''''''''''''''''''''''''''
 # import land surface temperature from copernicus, derived on the 01.07.2015
 lst_010715 <- brick("LST_201507011300.nc", varname = "LST") # brick function creates a raster object
+plot(lst_010715) # looking at the raster we see that it covers the whole planet, therefore we need to crop it
+lst_crop <- crop(lst_010715, ext_alps)
+lst_3035 <- projectRaster(lst_crop, crs = "+init=epsg:3035") # now we transform the projection, since it does not yet coincide with the other rasters
+lst_crop_alps <- crop(lst_3035, dem_alps)# now we crop the lst raster to the same extent as the others
+
+# to get a better look at the data we plot the and surface temperature
+plot_lst <- plot(lst_crop_alps, col = colors, main = "Land Surface Temperature - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
+plot(coastlines_3035_st, add = TRUE) # add on the coastlines
+
+# download this as a pdf
+pdf("LST.pdf",
+    width = 8, height = 7, # Width and height in inches
+    bg = "white",          # Background color
+    paper = "A4") 
+plot_lst <- plot(lst_crop_alps, col = colors, main = "Land Surface Temperature - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
+plot(coastlines_3035_st, add = TRUE)
+dev.off()
 
 
+
+# we plot all the images next to each other
+pdf("graphs.pdf",
+    width = 7, height = 10,
+    bg = "white",
+    paper = "A4")
+par(mfrow=c(2,2))
+plot_pinus_cembra <- plot(dat_pinus_cembra, pch = 20, axes = TRUE,  main = "Species distribution: Pinus Cembra")
+plot(coastlines_3035_st, add = TRUE)
+plot(dem_alps, col = colors, main = "Digital Elevation Model - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, pch = 20, add = TRUE)
+plot(coastlines_3035_st, add = TRUE) 
+plot(swi_crop_alps, col = colors, main = "Soil Water Index - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, cex = 0.5, col="white", add = TRUE)
+plot(coastlines_3035_st, col = "white", add = TRUE)
+plot_lst <- plot(lst_crop_alps, col = colors, main = "Land Surface Temperature - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, pch = 20, add = TRUE)
+plot(coastlines_3035_st, add = TRUE)
+dev.off()
+
+### CORRELATION''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+# to correlate the different data sets we extract the values for each at the location where a pine is found
+# we want to extract the exact elevation data for the points where the pine is found
+DEM_pinus <- extract (dem_alps, dat_pinus_cembra)
+# we want to extract the exact soil water data for the points where the pine is found
+SWI_pinus <- extract (swi_crop_alps, dat_pinus_cembra)
+# we want to extract the exact land surface temperature data for the points where the pine is found
+LST_pinus <- extract (lst_crop_alps, dat_pinus_cembra)
 
 # we create a new list, containing the coordinates of the point tree data
 Pinus_point_data <- tree_occ_pinus_cembra[c(1,2,4)]
@@ -168,3 +208,6 @@ Pinus_point_data <- tree_occ_pinus_cembra[c(1,2,4)]
 nr <- seq(from = 1, to = 346)
 # we bind together the point data of the pine with the extracted DEM, SWI and LST data
 Pinus <- cbind(nr, Pinus_point_data, DEM_pinus, SWI_pinus, LST_pinus)
+
+# one can see that several columns contain NA data, especially in the LST data
+# to be able to compute statistically with these values, the NA columns need to be removed
