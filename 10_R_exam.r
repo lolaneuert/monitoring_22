@@ -83,7 +83,7 @@ plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution d
 plot(coastlines_3035_st, add = TRUE) # add on the coastlines
 # we can see there are a few smaller areas of missing data in the southwestern part of the raster
 # as these areas only contain water anyway, we do not mind this 
-# further we see that some species occurrences lay outside of the dem raster
+# further we see that some species occurrences lay outside of the dem raster, but since our concern regards the alps, this is not an issue
 
 # save the plot as pdf
 pdf("DEM.pdf",
@@ -96,8 +96,8 @@ plot(coastlines_3035_st, add = TRUE) # add on the coastlines
 dev.off() # closes the window with the map
 
 # now we add a soil water index raster from copernicus, derived on the 01-02.07.2015
-swi_010715 <- brick("swi_010715.nc", varname = "SWI_002")# brick creates a raster object
-# looking at the dataset we see that it uses WGS84 as a projection, we need to change it to EPSG:3035, for to be compatible with the other sets
+swi_010715 <- brick("swi_010715.nc", varname = "SWI_002") # brick creates a raster object
+# looking at the dataset we see that it uses WGS84 as a projection, we need to change it to EPSG:3035, for it to be compatible with the other sets
 ext_alps <- c(5, 22, 39, 52)
 swi_crop <- crop(swi_010715, ext_alps) # first we crop it to an approximate extent of the same region as the dem
 swi_3035 <- projectRaster(swi_crop, crs = "+init=epsg:3035") # now we transform the projection
@@ -109,6 +109,31 @@ plot(swi_crop_alps, col = colors, main = "Soil Water Index - Alps", xlab = "lati
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
 plot(coastlines_3035_st, add = TRUE) # add on the coastlines
 
+# save this plot as pdf
+pdf("SWI.pdf",
+    width = 8, height = 7,
+    bg = "white",
+    paper = "A4")
+plot(swi_crop_alps, col = colors, main = "Soil Water Index - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
+plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
+plot(coastlines_3035_st, add = TRUE) # add on the coastlines
+dev.off()
+
+# we plot the dem and the swi images next to each other
+pdf("DEM_SWI.pdf",
+    width = 7, height = 10,
+    bg = "white",
+    paper = "A4")
+par(mfrow=c(2,1))
+plot(dem_alps, col = colors, main = "Digital Elevation Model - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
+plot(coastlines_3035_st, add = TRUE) 
+plot(swi_crop_alps, col = colors, main = "Soil Water Index - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, cex = 0.5, col="white", add = TRUE) # add on the species distribution data
+plot(coastlines_3035_st, col = "white", add = TRUE) # add on the coastlines
+dev.off()
+
+# now as a last raster we add a land surface temperature from copernicus, derived on the 01.07.2015
 
 
 # dat_pinus_cembra_wgs <- spTransform(dat_pinus_cembra, crs("+proj=longlat +datum=WGS84"))# WGS 84
