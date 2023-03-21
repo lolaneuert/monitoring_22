@@ -80,6 +80,8 @@ dev.off()
 
 
 
+# as the simple distribution does not yield much information about the position of pinus cembra occurrence one needs to look at further environmental data sets
+# in the following three environmental parameters (digital elevation, soil water, land surface temperature) are collected, adjusted/cleaned and plotted with the pine occurrences
 
 ### DEM-DATA''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # we want to underlay the species distribution with a digital elevation model, this is derived from copernicus data
@@ -211,3 +213,22 @@ Pinus <- cbind(nr, Pinus_point_data, DEM_pinus, SWI_pinus, LST_pinus)
 
 # one can see that several columns contain NA data, especially in the LST data
 # to be able to compute statistically with these values, the NA columns need to be removed
+Pinus_clean <- na.omit(Pinus) # remove all columns which contain NAs, we are left with 149 of originally 346 pine observations
+# some of the omissions were due to pine observations outside of the alpine region, whist most were due to missing data in one or more of the environmental rasters
+
+# for the actual correlation a pearson test is conducted
+# it is assumed that land surface temperature is negatively correlated with digital elevation 
+# whilst land surface temperature is positively correlated with soil water index
+# lastly it is assumed that digital elevation is negatively correlated with soil water index
+cor.test(Pinus_clean$LST_pinus, Pinus_clean$DEM_pinus, alternative = "less")
+cor.test(Pinus_clean$LST_pinus, Pinus_clean$SWI_pinus, alternative = "greater")
+cor.test(Pinus_clean$DEM_pinus, Pinus_clean$SWI_pinus, alternative = "less")
+
+# none of the above tests of correlation showed a p-value below 0.05 so there are doubts concerning there relevancy
+# ... results?? scatterplots??
+
+# which of the parameters shows larger range, more precise vales at points? in total/in points of pine occurrence?
+# this could lead to assumptions about which of them is more relevant for the occurrence of pine
+# boxplots of what values are available, and what values are shown at pine points
+
+
