@@ -19,7 +19,7 @@ library(ggspatial)
 library(maps)
 
 # set the working directory
-# setwd("C:/Rstudio/monitoring/exam_project2")
+setwd("C:/Rstudio/monitoring/exam_project2")
 
 
 
@@ -75,9 +75,9 @@ plot(coastlines_3035_st, add = TRUE) # we can see the species is mainly distribu
 
 # save the plot as a pdf
 pdf("Species_distr.pdf",
-  width = 8, height = 7, # Width and height in inches
-  bg = "white",          # Background color
-  paper = "A4")
+    width = 8, height = 7, # Width and height in inches
+    bg = "white",          # Background color
+    paper = "A4")
 plot_pinus_cembra <- plot(dat_pinus_cembra, pch = 20, axes = TRUE,  main = "Species distribution: Pinus Cembra")
 plot(coastlines_3035_st, add = TRUE) # we can see the species is mainly distributed in the alps
 dev.off()
@@ -93,13 +93,16 @@ dev.off()
 # we want to underlay the species distribution with a digital elevation model, this is derived from copernicus data 
 # https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1-0-and-derived-products/eu-dem-v1.0?tab=download
 dem_alps_brick <- brick("dem.tif") # the data is given as elevation in meters above sea level, and it is already in the same projection as the tree data (EPSG 3035)
+# this dem contains the study area of the alps as well as the surrounding areas
 
+# now crop the coastlines to the same extent as the dem
+coastlines_crop <- crop (coastlines_3035_st, dem_alps_brick)
 # ggplot is not working well with these layer combinations (requires a lot of back and forth of data formats)
 # so we use simple plot function for which viridis is not directly available, so we create a color palette using the viridis color generator
 colors <- colorRampPalette(c("#fde725", "#b5de2b", "#6ece58", "#35b779", "#1f9e89", "#26828e", "#31688e", "#3e4989", "#482878", "#440154"))(4000)
 plot(dem_alps_brick, col = colors, main = "Digital Elevation Model - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
-plot(coastlines_3035_st, add = TRUE)
+plot(coastlines_crop, add = TRUE) # add on the coastlines
 
 # we can see there are a few smaller areas of missing data in the southwestern part of the dem raster
 # as these areas only contain water anyway, we do not mind this 
@@ -107,12 +110,12 @@ plot(coastlines_3035_st, add = TRUE)
 
 # save the plot as pdf
 pdf("DEM.pdf",
-        width = 8, height = 7, # Width and height in inches
-        bg = "white",          # Background color
-        paper = "A4")      
+    width = 8, height = 7, # Width and height in inches
+    bg = "white",          # Background color
+    paper = "A4")      
 plot(dem_alps_brick, col = colors, main = "Digital Elevation Model - Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
-plot(coastlines_3035_st, add = TRUE) # add on the coastlines
+plot(coastlines_crop, add = TRUE) # add on the coastlines
 dev.off() # closes the window with the map
 
 
@@ -142,10 +145,10 @@ lst_crop_alps_jan <- crop(lst_3035_jan, dem_alps_brick) # we crop this raster to
 par(mfrow=c(1,2)) # create a double frame to display them next to each other
 plot(lst_crop_alps_jan, col = colors, main = "Land Surface Temperature - Alps, January 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
-plot(coastlines_3035_st, add = TRUE) # add on the coastlines
+plot(coastlines_crop, add = TRUE) # add on the coastlines
 plot(lst_crop_alps_jul, col = colors, main = "Land Surface Temperature - Alps, July 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
-plot(coastlines_3035_st, add = TRUE) # add on the coastlines
+plot(coastlines_crop, add = TRUE) # add on the coastlines
 
 # when comparing the two, we see that the coverage is very different in the two pictures, whilst the January image shows a better coverage of the Alps,
 # the July picture shows a better coverage of landmasses in general, but many blank areas in the alpine region
@@ -157,7 +160,7 @@ pdf("LST_jan.pdf",
     paper = "A4") 
 plot_lst <- plot(lst_crop_alps_jan, col = colors, main = "Land Surface Temperature - Alps, January 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
-plot(coastlines_3035_st, add = TRUE)
+plot(coastlines_crop, add = TRUE)
 dev.off()
 
 pdf("LST_jul.pdf",
@@ -166,7 +169,7 @@ pdf("LST_jul.pdf",
     paper = "A4") 
 plot_lst <- plot(lst_crop_alps_jan, col = colors, main = "Land Surface Temperature - Alps, July 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
-plot(coastlines_3035_st, add = TRUE)
+plot(coastlines_crop, add = TRUE)
 dev.off()
 
 
@@ -177,16 +180,16 @@ pdf("all_graphs.pdf",
     paper = "A4")
 par(mfrow=c(2,2))
 plot(dat_pinus_cembra, pch = 20, axes = TRUE,  main = "Species distribution: Pinus Cembra", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
-plot(coastlines_3035_st, add = TRUE)
+plot(coastlines_crop, add = TRUE)
 plot(dem_alps_brick, col = colors, main = "Digital Elevation Model-Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
 plot(dat_pinus_cembra, pch = 20, add = TRUE)
-plot(coastlines_3035_st, add = TRUE) 
+plot(coastlines_crop, add = TRUE) 
 plot(lst_crop_alps_jan, col = colors, main = "Land Surface Temperature-Jan 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
 plot(dat_pinus_cembra, pch = 20, add = TRUE)
-plot(coastlines_3035_st, add = TRUE) 
+plot(coastlines_crop, add = TRUE) 
 plot(lst_crop_alps_jul, col = colors, main = "Land Surface Temperature-July 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
 plot(dat_pinus_cembra, pch = 20, add = TRUE) 
-plot(coastlines_3035_st, add = TRUE)
+plot(coastlines_crop, add = TRUE)
 dev.off()
 
 
@@ -197,7 +200,7 @@ dev.off()
 # we want to extract the exact elevation data for the points where the pine is found
 DEM_pinus <- extract (dem_alps_brick, dat_pinus_cembra)
 # as well as the exact land surface temperature data
-LST_pinus_summer <- extract (lst_crop_alps, dat_pinus_cembra) # both for the summer
+LST_pinus_summer <- extract (lst_crop_alps_jul, dat_pinus_cembra) # both for the summer
 LST_pinus_winter <- extract(lst_crop_alps_jan, dat_pinus_cembra) # and winter data
 
 
@@ -213,9 +216,9 @@ Pinus <- cbind(nr, Pinus_point_data, DEM_pinus, LST_pinus_summer, LST_pinus_wint
 
 # one can see that several columns contain NA data, especially in the LST data
 # to be able to compute statistically with these values, the NA columns need to be removed
-Pinus_clean <- na.omit(Pinus) # remove all columns which contain NAs, we are left with  of originally 337 pine observations
+Pinus_clean <- na.omit(Pinus) # remove all columns which contain NAs, we are left with 138 of originally 337 pine observations
 
-
+####### return to the correlations!!
 # for the actual correlation a pearson test is conducted
 # it is assumed that summer land surface temperature is negatively correlated with digital elevation (the lower down, the warmer)
 # whilst winter land surface temperature is positively correlated with the elevation (the further up, the colder)
@@ -254,19 +257,19 @@ scatter_hyp2 <- ggplot(data = Pinus_clean) +
 # which of the parameters shows larger range, more precise vales at points? in total/in points of pine occurrence?
 # this could lead to assumptions about which of them is more relevant for the occurrence of pine
 # boxplots of what values are available, and what values are shown at pine points
-DEM_box <- ggplot(data = Pinus_clean_new) +
+DEM_box <- ggplot(data = Pinus_clean) +
   geom_boxplot(aes(y = layer)) + 
   labs(title = "DEM",
-      y = "DEM") + 
+       y = "DEM") + 
   theme(panel.background = element_rect(fill = "white"))
 
-LST_summer_box <- ggplot(data = Pinus_clean_new) +
+LST_summer_box <- ggplot(data = Pinus_clean) +
   geom_boxplot(aes(y = LST_pinus_summer)) + 
   labs(title = "LST_summer",
-      y = "LST") + 
+       y = "LST") + 
   theme(panel.background = element_rect(fill = "white"))
 
-LST_winter_box <- ggplot(data = Pinus_clean_new) +
+LST_winter_box <- ggplot(data = Pinus_clean) +
   geom_boxplot(aes(y = LST_pinus_winter)) + 
   labs(title = "LST_winter",
        y = "LST") + 
@@ -281,3 +284,4 @@ ggsave(filename = "boxplots.pdf", plot = boxplots, width = 15, height = 10)
 # lie within 1750-2000m of elevation, at a soil water index of 126% (???) and at a land surface temperature of over 300°K (or 26°C) in july, 
 # showing that places with higher summer temperatures are probably less optimal for this pine species because of the heat conditions
 # it seems as if elevation and surface temperature might be two conditions limiting the pine in colonizing further habitats
+
