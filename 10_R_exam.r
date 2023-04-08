@@ -87,8 +87,6 @@ dev.off()
 # in the following two environmental parameters (digital elevation and land surface temperature, in summer and winter) are collected, adjusted/cleaned and plotted with the pine occurrences
 
 
-
-
 ### DEM-DATA ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # we want to underlay the species distribution with a digital elevation model, this is derived from copernicus data 
 # https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1-0-and-derived-products/eu-dem-v1.0?tab=download
@@ -131,6 +129,8 @@ lst_crop_jul <- crop(lst_010715, ext_alps) # we crop it to this extent
 lst_3035_jul <- projectRaster(lst_crop_jul, crs = "+init=epsg:3035") # we transform the projection, since it does not yet coincide with the other rasters
 # if we had done this step before cropping the raster it would have consumed much larger computational powers, as it would have had to apply the mathematical transformation to many more pixels
 lst_crop_alps_jul <- crop(lst_3035_jul, dem_alps_brick) # we crop the lst raster to the exact same extent as the dem 
+# to have nicer data to look at we transform the data from °Kelvin to °Celsius
+lst_jul <- lst_crop_alps_jul - 272.15
 
 # to compare the upper and lower temperature boundaries in the observed pine locations, in addition to the summer picture we load a january picture of the same area and year
 # import lst from copernicus, deridata is from the 01.01.2015
@@ -138,28 +138,33 @@ lst_010115 <- brick("LST_201501011300.nc", varname = "LST") # brick function cre
 lst_crop_jan <- crop(lst_010115, ext_alps) # again preliminary crop
 lst_3035_jan <- projectRaster(lst_crop_jan, crs = "+init=epsg:3035") # we transform the projection
 lst_crop_alps_jan <- crop(lst_3035_jan, dem_alps_brick) # we crop this raster to the extent of the others
+lst_jan <- lst_crop_alps_jan - 272.15 # transform kelvin data into celsius
 
+# subtract the winter from the summer temperature to see the difference
+lst_diff <- lst_jul - lst_jan
 
 # to get a better look at the data we plot the two land surface temperatures, it is given in °K, 
 # unfortunately we can see that many areas in the alps show no data, particularly in the summer picture
-par(mfrow=c(1,2)) # create a double frame to display them next to each other
-plot(lst_crop_alps_jan, col = colors, main = "Land Surface Temperature - Alps, January 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
+par(mfrow=c(1,3)) # create a double frame to display them next to each other
+plot(lst_jan, col = colors, main = "Land Surface Temperature - Alps, January 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
 plot(coastlines_crop, add = TRUE) # add on the coastlines
-plot(lst_crop_alps_jul, col = colors, main = "Land Surface Temperature - Alps, July 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
-plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
-plot(coastlines_crop, add = TRUE) # add on the coastlines
-
-# when comparing the two, we see that the coverage is very different in the two pictures, whilst the January image shows a better coverage of the Alps,
+plot(lst_jul, col = colors, main = "Land Surface Temperature - Alps, July 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
+plot(dat_pinus_cembra, pch = 20, add = TRUE)
+plot(coastlines_crop, add = TRUE) 
+plot(lst_diff,  col = colors, main = "Land Surface Temperature - Alps, Difference", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
+plot(dat_pinus_cembra, pch = 20, add = TRUE) 
+plot(coastlines_crop, add = TRUE) 
+# when comparing July and January, we see that the coverage is very different in the two pictures, whilst the January image shows a better coverage of the Alps,
 # the July picture shows a better coverage of landmasses in general, but many blank areas in the alpine region
 
-# wwe download these as pdfs
+# we download these as pdfs
 pdf("LST_jan.pdf",
-    width = 8, height = 7, # Width and height in inches
-    bg = "white",          # Background color
+    width = 8, height = 7, 
+    bg = "white",         
     paper = "A4") 
-plot_lst <- plot(lst_crop_alps_jan, col = colors, main = "Land Surface Temperature - Alps, January 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
-plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
+plot(lst_jan, col = colors, main = "Land Surface Temperature - Alps, January 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, pch = 20, add = TRUE) 
 plot(coastlines_crop, add = TRUE)
 dev.off()
 
@@ -167,11 +172,19 @@ pdf("LST_jul.pdf",
     width = 8, height = 7, 
     bg = "white",          
     paper = "A4") 
-plot_lst <- plot(lst_crop_alps_jan, col = colors, main = "Land Surface Temperature - Alps, July 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
-plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
+plot(lst_jul, col = colors, main = "Land Surface Temperature - Alps, July 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, pch = 20, add = TRUE) 
 plot(coastlines_crop, add = TRUE)
 dev.off()
 
+pdf("LST_diff.pdf",
+   width = 8, height = 7, 
+   bg = "white",          
+   paper = "A4") 
+plot(lst_diff, col = colors, main = "Land Surface Temperature - Alps, Difference", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem to get a first look at it
+plot(dat_pinus_cembra, pch = 20, add = TRUE) 
+plot(coastlines_crop, add = TRUE)
+dev.off()
 
 # we plot all 4 images next to each other
 pdf("all_graphs.pdf",
@@ -184,10 +197,10 @@ plot(coastlines_crop, add = TRUE)
 plot(dem_alps_brick, col = colors, main = "Digital Elevation Model-Alps", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
 plot(dat_pinus_cembra, pch = 20, add = TRUE)
 plot(coastlines_crop, add = TRUE) 
-plot(lst_crop_alps_jan, col = colors, main = "Land Surface Temperature-Jan 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
+plot(lst_jan, col = colors, main = "Land Surface Temperature-Jan 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
 plot(dat_pinus_cembra, pch = 20, add = TRUE)
 plot(coastlines_crop, add = TRUE) 
-plot(lst_crop_alps_jul, col = colors, main = "Land Surface Temperature-July 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
+plot(lst_jul, col = colors, main = "Land Surface Temperature-July 2015", sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
 plot(dat_pinus_cembra, pch = 20, add = TRUE) 
 plot(coastlines_crop, add = TRUE)
 dev.off()
@@ -200,19 +213,16 @@ dev.off()
 # we want to extract the exact elevation data for the points where the pine is found
 DEM_pinus <- extract (dem_alps_brick, dat_pinus_cembra)
 # as well as the exact land surface temperature data
-LST_pinus_summer <- extract (lst_crop_alps_jul, dat_pinus_cembra) # both for the summer
-LST_pinus_winter <- extract(lst_crop_alps_jan, dat_pinus_cembra) # and winter data
+LST_pinus_summer <- extract (lst_jul, dat_pinus_cembra) # both for the summer
+LST_pinus_winter <- extract(lst_jan, dat_pinus_cembra) # and winter data
 
 
 # we create a new list, containing the coordinates of the point tree data
 Pinus_point_data <- tree_occ_pinus_cembra[c(1,2,4)]
-# to have some orientation we create a sequence of numbers 1:337
-nr <- seq(from = 1, to = 337)
+nr <- seq(from = 1, to = 337) # to have some orientation we create a sequence of numbers 1:337
 # we bind together the point data of the pine with the extracted DEM and LST data
-Pinus <- cbind(nr, Pinus_point_data, DEM_pinus, LST_pinus_summer, LST_pinus_winter)
-
-##### for some reason the layer DEM_pinus lost his name whilst being integrated to the df, so it is now called layer??
-
+Pinus <- cbind(nr, Pinus_point_data, DEM_pinus, LST_pinus_winter, LST_pinus_summer)
+names(Pinus) <- c("nr", "X", "Y", "Species_name", "DEM", "LST_winter", "LST_summer") # change the column names
 
 # one can see that several columns contain NA data, especially in the LST data
 # to be able to compute statistically with these values, the NA columns need to be removed
@@ -220,37 +230,41 @@ Pinus_clean <- na.omit(Pinus) # remove all columns which contain NAs, we are lef
 
 ####### return to the correlations!!
 # for the actual correlation a pearson test is conducted
-# it is assumed that summer land surface temperature is negatively correlated with digital elevation (the lower down, the warmer)
-# whilst winter land surface temperature is positively correlated with the elevation (the further up, the colder)
-cor.test(Pinus_clean$LST_pinus_summer, Pinus_clean$DEM_pinus, alternative = "less")
-cor.test(Pinus_clean$LST_pinus_winter, Pinus_clean$DEM_pinus, alternative = "greater")
+# 1st Hyp: it is assumed that summer land surface temperature is negatively correlated with digital elevation (the lower down, the warmer)
+# 2nd Hyp: it is assumed that winter land surface temperature is positively correlated with the elevation (the further up, the colder)
+# 1st Hyp
+cor.test(Pinus_clean$LST_summer, Pinus_clean$DEM, alternative = "less")
+# Pearson's product-moment correlation gives a p-value of 0.193, thereby not seeming to be statistically significant
+# however the correlation is estimated to be negative with -0.0743
 
-# the first two of the above tests of correlation did not show a p-value below 0.05 so there are doubts concerning there relevancy
-# the last test however showed a p-value clearly below 0.05, thereby giving rise to the assumption that the parameter soil water is indeed positively dependent on elevation at the observed locations
+cor.test(Pinus_clean$LST_winter, Pinus_clean$DEM, alternative = "greater")
+# Pearson's product-moment correlation gives a p-value of 0.4066, which is not significant either
+# the correlation seems to be slightly positive with 0.0203
+
 # regarding the results, not much can be said, it would be necessary to compare them to random points around the occurrences
 
 # scatterplots to visualize the correlations
-
 scatter_hyp1 <- ggplot(data = Pinus_clean) + 
-  geom_point(aes(x = LST_pinus_summer, y = DEM_pinus), alpha = 0.3) + 
-  geom_smooth(aes(x = LST_pinus_summer, y = DEM_pinus), method = "lm") +
+  geom_point(aes(x = LST_summer, y = DEM), alpha = 0.3) + 
+  geom_smooth(aes(x = LST_summer, y = DEM), method = "lm") +
   labs(title = "Summer temperature and elevation correlation", 
        subtitle = "at observed Pinus locations", 
-       x = "Land surface temperature in °K", y = "Elevation in m a.s.l.") +
+       x = "Land surface temperature in °C", y = "Elevation in m a.s.l.") +
   theme(panel.background = element_rect(fill = "white"))
 
 scatter_hyp2 <- ggplot(data = Pinus_clean) + 
-  geom_point(aes(x = LST_pinus_winter, y = DEM_pinus), alpha = 0.3) + 
-  geom_smooth(aes(x = LST_pinus_Winter, y = DEM_pinus), method = "lm") +
+  geom_point(aes(x = LST_winter, y = DEM), alpha = 0.3) + 
+  geom_smooth(aes(x = LST_winter, y = DEM), method = "lm") +
   labs(title = "Winter temperature and elevation correlation", 
        subtitle = "at observed Pinus locations", 
-       x = "Land surface temperature in °K", y = "Elevation in m a.s.l.") +
+       x = "Land surface temperature in °C", y = "Elevation in m a.s.l.") +
   theme(panel.background = element_rect(fill = "white"))
 
 # the two scatterplots show very unclear results, and do not seem to show a correlation between either of the parameters
 
 # the first scatterplot however shows a cloud of temperatures that do not seem to lay in any regard to the measured elevation,
-## also they seem rather high varying around 300°K at around 26°C, but since it is summer this could be explained? (also in ground rather constant temperatures)
+## also they seem rather high varying around 30°C, but since it is summer this could be explained? (also in ground rather constant temperatures)
+# the second scatterplot shows a rather random distribution of temperatures overall
 
 
 
@@ -258,19 +272,19 @@ scatter_hyp2 <- ggplot(data = Pinus_clean) +
 # this could lead to assumptions about which of them is more relevant for the occurrence of pine
 # boxplots of what values are available, and what values are shown at pine points
 DEM_box <- ggplot(data = Pinus_clean) +
-  geom_boxplot(aes(y = layer)) + 
+  geom_boxplot(aes(y = DEM)) + 
   labs(title = "DEM",
        y = "DEM") + 
   theme(panel.background = element_rect(fill = "white"))
 
 LST_summer_box <- ggplot(data = Pinus_clean) +
-  geom_boxplot(aes(y = LST_pinus_summer)) + 
+  geom_boxplot(aes(y = LST_summer)) + 
   labs(title = "LST_summer",
        y = "LST") + 
   theme(panel.background = element_rect(fill = "white"))
 
 LST_winter_box <- ggplot(data = Pinus_clean) +
-  geom_boxplot(aes(y = LST_pinus_winter)) + 
+  geom_boxplot(aes(y = LST_winter)) + 
   labs(title = "LST_winter",
        y = "LST") + 
   theme(panel.background = element_rect(fill = "white"))
@@ -281,7 +295,8 @@ boxplots <- DEM_box + LST_winter_box + LST_summer_box
 ggsave(filename = "boxplots.pdf", plot = boxplots, width = 15, height = 10)
 
 # from the boxplots one can clearly see that the majority of observed Pinus cembra observations
-# lie within 1750-2000m of elevation, at a soil water index of 126% (???) and at a land surface temperature of over 300°K (or 26°C) in july, 
-# showing that places with higher summer temperatures are probably less optimal for this pine species because of the heat conditions
+# lie within 1750-2000m of elevation, at a land surface temperature of around 30°C in July, and around 0°C in January
+# showing that places with summer temperatures higher than 30°C are probably less optimal for this pine species because of the heat conditions
+# whilst winter temperature seems to confine the pine to locations with a rough minimum temperature around 0°C (land surface temperature)
 # it seems as if elevation and surface temperature might be two conditions limiting the pine in colonizing further habitats
 
