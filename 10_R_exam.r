@@ -110,8 +110,9 @@ coastlines_crop <- crop (coastlines_3035_st, dem_alps_brick)
 # therefore we create a color palette using the viridis color generator
 colors <- colorRampPalette(c("#fde725", "#b5de2b", "#6ece58", "#35b779", "#1f9e89", 
                              "#26828e", "#31688e", "#3e4989", "#482878", "#440154"))(4000)
+# now plot the dem 
 plot(dem_alps_brick, col = colors, main = "Digital Elevation Model - Alps", 
-     sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") # plot the dem
+     sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
 plot(coastlines_crop, add = TRUE) # add on the coastlines
 
@@ -138,13 +139,16 @@ dev.off() # closes the window with the map
 # we import land surface temperature from copernicus, the data is from the 01.07.2015
 # https://land.copernicus.vgt.vito.be/PDF/portal/Application.html#Browse;Root=520752;Time=NORMAL,NORMAL,-1,,,-1,,
 lst_010715 <- brick("LST_201507011300.nc", varname = "LST") # brick function creates a raster object
+
 # looking at the raster we see that it covers the whole planet, therefore we need to crop it to the study area-alps
 ext_alps <- c(5, 22, 39, 52) # for this we first create a rough extent of the study area
 lst_crop_jul <- crop(lst_010715, ext_alps) # we crop it to this extent
+
 # we transform the projection, since it does not yet coincide with the other rasters
 lst_3035_jul <- projectRaster(lst_crop_jul, crs = "+init=epsg:3035") 
 # if we had done this step before cropping the raster it would have consumed much larger computational powers, 
 # as it would have had to apply the mathematical transformation to many more pixels
+
 # now we crop the lst raster to the exact same extent as the dem 
 lst_crop_alps_jul <- crop(lst_3035_jul, dem_alps_brick)
 # to have nicer data to look at we transform the data from °Kelvin to °Celsius
@@ -154,8 +158,10 @@ lst_jul <- lst_crop_alps_jul - 272.15
 # in addition to the summer picture we load a january picture of the same area and year
 # import lst from copernicus, deridata is from the 01.01.2015
 lst_010115 <- brick("LST_201501011300.nc", varname = "LST") # brick function creates a raster object
+
 lst_crop_jan <- crop(lst_010115, ext_alps) # again preliminary crop
 lst_3035_jan <- projectRaster(lst_crop_jan, crs = "+init=epsg:3035") # we transform the projection
+
 lst_crop_alps_jan <- crop(lst_3035_jan, dem_alps_brick) # we crop this raster to the extent of the others
 lst_jan <- lst_crop_alps_jan - 272.15 # transform kelvin data into celsius
 
