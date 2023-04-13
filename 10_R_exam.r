@@ -105,6 +105,7 @@ dem_alps_brick <- brick("dem.tif")
 
 # now crop the coastlines to the same extent as the dem
 coastlines_crop <- crop (coastlines_3035_st, dem_alps_brick)
+
 # ggplot is not working well with these layer combinations (requires a lot of back and forth of data formats)
 # so we use simple plot function for which viridis is not directly available
 # therefore we create a color palette using the viridis color generator
