@@ -70,10 +70,7 @@ coastlines_st <- st_as_sf(coastlines, crs = "+proj=longlat +datum=WGS84 +no_defs
 coastlines_3035 <- st_transform(coastlines_st, crs = crs("+init=epsg:3035")@projargs) 
 # now align the projection to the pine dataset
 coastlines_3035_st <- as_Spatial(coastlines_3035) # tranform it back to a spatial lines df
-
 plot(coastlines_3035_st) # plot it to have a look
-# now crop the coastlines to the same extent as the dem
-coastlines_crop <- crop (coastlines_3035_st, dem_alps_brick)
 
 
 # now plot the transformed spatial object containing the species distribution 
@@ -107,6 +104,9 @@ dem_alps_brick <- brick("dem.tif")
 # it is already in the same projection as the tree data (EPSG 3035)
 # this dem contains the study area of the alps as well as the surrounding areas
 
+# now we crop the coastlines to the same extent as the dem
+coastlines_crop <- crop (coastlines_3035_st, dem_alps_brick)
+
 # ggplot is not working well with these layer combinations (requires a lot of back and forth of data formats)
 # so we use simple plot function for which viridis is not directly available
 # therefore we create a color palette using the viridis color generator
@@ -116,10 +116,6 @@ colors <- colorRampPalette(c("#fde725", "#b5de2b", "#6ece58", "#35b779", "#1f9e8
 plot(dem_alps_brick, col = colors, main = "Digital Elevation Model - Alps", 
      sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
-
-# now crop the coastlines to the same extent as the dem
-coastlines_crop <- crop (coastlines_3035_st, dem_alps_brick)
-
 plot(coastlines_crop, add = TRUE) # add on the coastlines
 
 # we can see there are a few smaller areas of missing data in the southwestern part of the dem raster
