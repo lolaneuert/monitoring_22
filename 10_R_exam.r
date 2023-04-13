@@ -305,6 +305,9 @@ scatter_hyp2 <- ggplot(data = Pinus_clean) +
        x = "Land surface temperature in °C", y = "Elevation in m a.s.l.") +
   theme(panel.background = element_rect(fill = "white"))
 
+ggsave(filename = "scatter_hyp1.pdf", plot = scatter_hyp1, width = 15, height = 10) # save the scatterplots as PDFs
+ggsave(filename = "scatter_hyp2.pdf", plot = scatter_hyp2, width = 15, height = 10)
+
 # the two scatterplots show very unclear results, and do not seem to show a correlation between either of the parameters
 
 # the first scatterplot however shows a cloud of temperatures that do not seem to lay in any regard to the measured elevation,
