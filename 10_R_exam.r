@@ -70,7 +70,11 @@ coastlines_st <- st_as_sf(coastlines, crs = "+proj=longlat +datum=WGS84 +no_defs
 coastlines_3035 <- st_transform(coastlines_st, crs = crs("+init=epsg:3035")@projargs) 
 # now align the projection to the pine dataset
 coastlines_3035_st <- as_Spatial(coastlines_3035) # tranform it back to a spatial lines df
+
 plot(coastlines_3035_st) # plot it to have a look
+# now crop the coastlines to the same extent as the dem
+coastlines_crop <- crop (coastlines_3035_st, dem_alps_brick)
+
 
 # now plot the transformed spatial object containing the species distribution 
 plot_pinus_cembra <- plot(dat_pinus_cembra, pch = 20, axes = TRUE,  
