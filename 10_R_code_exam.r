@@ -2,21 +2,13 @@
 ### Exam Project - Monitoring Ecosystem Change and Function
 ### with Prof. Rocchini in the winter term 2022/23
 
-
 # load useful packages
 library(raster)
-library(RStoolbox)
 library(ggplot2)
 library(patchwork)
-library(gridExtra)
-library(viridis)
-library(rgdal)
 library(dplyr)
-library(spatstat)
-library(sp)
+library(rgdal)
 library(sf)
-library(ggspatial)
-library(maps)
 
 # set the working directory
 setwd("C:/Rstudio/monitoring/exam_project2")
@@ -24,8 +16,9 @@ setwd("C:/Rstudio/monitoring/exam_project2")
 
 
 
-### EU-FOREST DATA '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-### information on the dataset from the authors
+### EU-FOREST DATA '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+## information on the dataset from the authors
 # "EU-Forest greatly extends the publicly available information on the distribution of European tree species 
 # by adding almost half a million of tree occurrences derived from National Forest Inventories for 21 countries in Europe. 
 # The improvement is not only concerning the number of occurrences but also the taxonomy including more than 200 tree species. 
@@ -36,9 +29,9 @@ setwd("C:/Rstudio/monitoring/exam_project2")
 # we believe that the great improvement in forest occurrences, taxonomy and spatial coverage will most likely benefit several disciplines 
 # including forestry, biodiversity conservation, palaeoecology, plant ecology, the bioeconomy, and pest management."
 
-## Strona, Giovanni; MAURI, ACHILLE; San-Miguel-Ayanz, Jesús (2016): 
+## Strona, Giovanni; Mauri, Achille; San-Miguel-Ayanz, Jesús (2016): 
 ## A high-resolution pan-European tree occurrence dataset. figshare. Collection. 
-## https://doi.org/10.6084/m9.figshare.c.3288407.v1  
+# https://doi.org/10.6084/m9.figshare.c.3288407.v1  
 
 # load data: EU-forest dataset of tree species distribution as csv file
 tree_occ_species <- read.table("EUForestspecies.csv", header = TRUE, sep = ",")
@@ -61,24 +54,25 @@ proj4string(dat_pinus_cembra) <- crs("+init=epsg:3035") # inform R about the ori
 
 
 
-### COASTLINE DATA ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+# COASTLINE DATA ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 # load shapefile containing the european coastlines (from course data, Monitoring of Ecosystem Changes and Functioning)
 coastlines <- readOGR("ne_10m_coastline.shp") 
 # since it is not in the same projection as the tree point data we need to transform the projection to EPSG:3035
+
 # to change the projection we first need to transform it to an sf object
 coastlines_st <- st_as_sf(coastlines, crs = "+proj=longlat +datum=WGS84 +no_defs") 
 coastlines_3035 <- st_transform(coastlines_st, crs = crs("+init=epsg:3035")@projargs) 
+
 # now align the projection to the pine dataset
 coastlines_3035_st <- as_Spatial(coastlines_3035) # tranform it back to a spatial lines df
 plot(coastlines_3035_st) # plot it to have a look
-
 
 # now plot the transformed spatial object containing the species distribution 
 plot_pinus_cembra <- plot(dat_pinus_cembra, pch = 20, axes = TRUE,  
                           main = "Species distribution: Pinus Cembra") 
 plot(coastlines_3035_st, add = TRUE) #add the european coastlines around it for visuals 
 # we can see the species is mainly distributed in the alps
-
 
 # save the plot as a pdf
 pdf("Species_distr.pdf",
@@ -89,14 +83,16 @@ plot_pinus_cembra <- plot(dat_pinus_cembra, pch = 20, axes = TRUE,  main = "Spec
 plot(coastlines_3035_st, add = TRUE) # we can see the species is mainly distributed in the alps
 dev.off()
 
-
 # as the simple distribution does not yield much information about the position of pinus cembra occurrence 
 # one needs to look at further environmental data sets
 # in the following two environmental parameters (digital elevation and land surface temperature, in summer and winter) are collected, 
 # adjusted/cleaned and plotted with the pine occurrences
 
 
-### DEM-DATA ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+
+### DIGITAL ELEVATION MODEL DATA '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 # we want to underlay the species distribution with a digital elevation model, this is derived from copernicus data 
 # https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1-0-and-derived-products/eu-dem-v1.0?tab=download
 dem_alps_brick <- brick("dem.tif") 
@@ -137,10 +133,12 @@ dev.off() # closes the window with the map
 
 
 
-### LAND SURFACE TEMPERATURE DATA'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+### LAND SURFACE TEMPERATURE DATA''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 # we import land surface temperature from copernicus, the data is from the 01.07.2015
 # https://land.copernicus.vgt.vito.be/PDF/portal/Application.html#Browse;Root=520752;Time=NORMAL,NORMAL,-1,,,-1,,
-lst_010715 <- brick("LST_201507011300.nc", varname = "LST") # brick function creates a raster object
+# brick function creates a raster object
+lst_010715 <- brick("LST_201507011300.nc", varname = "LST")
 
 # looking at the raster we see that it covers the whole planet, therefore we need to crop it to the study area-alps
 ext_alps <- c(5, 22, 39, 52) # for this we first create a rough extent of the study area
@@ -153,6 +151,7 @@ lst_3035_jul <- projectRaster(lst_crop_jul, crs = "+init=epsg:3035")
 
 # now we crop the lst raster to the exact same extent as the dem 
 lst_crop_alps_jul <- crop(lst_3035_jul, dem_alps_brick)
+
 # to have nicer data to look at we transform the data from °Kelvin to °Celsius
 lst_jul <- lst_crop_alps_jul - 272.15
 
@@ -165,22 +164,25 @@ lst_crop_jan <- crop(lst_010115, ext_alps) # again preliminary crop
 lst_3035_jan <- projectRaster(lst_crop_jan, crs = "+init=epsg:3035") # we transform the projection
 
 lst_crop_alps_jan <- crop(lst_3035_jan, dem_alps_brick) # we crop this raster to the extent of the others
-lst_jan <- lst_crop_alps_jan - 272.15 # transform kelvin data into celsius
+lst_jan <- lst_crop_alps_jan - 272.15 # transform °kelvin data into °celsius
 
 # subtract the winter from the summer temperature to see the difference
 lst_diff <- lst_jul - lst_jan
 
-# to get a better look at the data we plot the two land surface temperatures, it is given in °K, 
+# to get a better look at the data we plot the two land surface temperatures 
 # unfortunately we can see that many areas in the alps show no data, particularly in the summer picture
-par(mfrow=c(1,3)) # create a double frame to display them next to each other
+# create a double frame to display them next to each other
+par(mfrow=c(1,3)) 
 plot(lst_jan, col = colors, main = "Land Surface Temperature - Alps, January 2015", 
      sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
 plot(dat_pinus_cembra, pch = 20, add = TRUE) # add on the species distribution data
 plot(coastlines_crop, add = TRUE) # add on the coastlines
+
 plot(lst_jul, col = colors, main = "Land Surface Temperature - Alps, July 2015", 
      sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
 plot(dat_pinus_cembra, pch = 20, add = TRUE)
 plot(coastlines_crop, add = TRUE) 
+
 plot(lst_diff,  col = colors, main = "Land Surface Temperature - Alps, Difference", 
      sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
 plot(dat_pinus_cembra, pch = 20, add = TRUE) 
@@ -230,14 +232,17 @@ par(mfrow=c(2,2))
 plot(dat_pinus_cembra, pch = 20, axes = TRUE,  main = "Species distribution: Pinus Cembra", 
      sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
 plot(coastlines_crop, add = TRUE)
+
 plot(dem_alps_brick, col = colors, main = "Digital Elevation Model-Alps", 
      sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
 plot(dat_pinus_cembra, pch = 20, add = TRUE)
 plot(coastlines_crop, add = TRUE) 
+
 plot(lst_jan, col = colors, main = "Land Surface Temperature-Jan 2015", 
      sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude") 
 plot(dat_pinus_cembra, pch = 20, add = TRUE)
 plot(coastlines_crop, add = TRUE) 
+
 plot(lst_jul, col = colors, main = "Land Surface Temperature-July 2015", 
      sub = "Showing species distribution and coastlines", xlab = "latitude", ylab = "longitude")
 plot(dat_pinus_cembra, pch = 20, add = TRUE) 
@@ -247,20 +252,25 @@ dev.off()
 
 
 
-### CORRELATION AND ANALYSIS''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+### CORRELATION AND STATISTICAL ANALYSIS'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 # to correlate the different data sets we extract the values for each at the location where a pine is found
 # we want to extract the exact elevation data for the points where the pine is found
 DEM_pinus <- extract (dem_alps_brick, dat_pinus_cembra)
+
 # as well as the exact land surface temperature data
 LST_pinus_summer <- extract (lst_jul, dat_pinus_cembra) # both for the summer
 LST_pinus_winter <- extract(lst_jan, dat_pinus_cembra) # and winter data
 
-
 # we create a new list, containing the coordinates of the point tree data
 Pinus_point_data <- tree_occ_pinus_cembra[c(1,2,4)]
-nr <- seq(from = 1, to = 337) # to have some orientation we create a sequence of numbers 1:337
+
+# to have some orientation we create a sequence of numbers 1:337
+nr <- seq(from = 1, to = 337) 
+
 # we bind together the point data of the pine with the extracted DEM and LST data
 Pinus <- cbind(nr, Pinus_point_data, DEM_pinus, LST_pinus_winter, LST_pinus_summer)
+
 # change the column names
 names(Pinus) <- c("nr", "X", "Y", "Species_name", "DEM", "LST_winter", "LST_summer") 
 
@@ -269,7 +279,6 @@ names(Pinus) <- c("nr", "X", "Y", "Species_name", "DEM", "LST_winter", "LST_summ
 # we are left with 138 of originally 337 pine observations
 Pinus_clean <- na.omit(Pinus) 
 
-####### return to the correlations!!
 # for the actual correlation a pearson test is conducted
 # 1st Hyp: it is assumed that summer land surface temperature is negatively correlated with digital elevation 
 # (the lower down, the warmer)
@@ -285,8 +294,6 @@ cor.test(Pinus_clean$LST_summer, Pinus_clean$DEM, alternative = "less")
 cor.test(Pinus_clean$LST_winter, Pinus_clean$DEM, alternative = "greater")
 # Pearson's product-moment correlation gives a p-value of 0.4066, which is not significant either
 # the correlation seems to be slightly positive with 0.0203
-
-# regarding the results, not much can be said, it would be necessary to compare them to random points around the occurrences
 
 # scatterplots to visualize the correlations
 scatter_hyp1 <- ggplot(data = Pinus_clean) + 
@@ -306,15 +313,13 @@ scatter_hyp2 <- ggplot(data = Pinus_clean) +
   theme(panel.background = element_rect(fill = "white"))
 
 ggsave(filename = "scatter_hyp1.pdf", plot = scatter_hyp1, width = 15, height = 10) # save the scatterplots as PDFs
+
 ggsave(filename = "scatter_hyp2.pdf", plot = scatter_hyp2, width = 15, height = 10)
 
 # the two scatterplots show very unclear results, and do not seem to show a correlation between either of the parameters
-
 # the first scatterplot however shows a cloud of temperatures that do not seem to lay in any regard to the measured elevation,
 ## also they seem rather high varying around 30°C, but since it is summer this could be explained? (also in ground rather constant temperatures)
 # the second scatterplot shows a rather random distribution of temperatures overall
-
-
 
 # which of the parameters shows larger range, more precise vales at points? in total/in points of pine occurrence?
 # this could lead to assumptions about which of them is more relevant for the occurrence of pine
@@ -339,6 +344,7 @@ LST_winter_box <- ggplot(data = Pinus_clean) +
 
 # display all of them next to each other
 boxplots <- DEM_box + LST_winter_box + LST_summer_box 
+
 # save them as a pdf 
 ggsave(filename = "boxplots.pdf", plot = boxplots, width = 15, height = 10)
 
@@ -347,4 +353,3 @@ ggsave(filename = "boxplots.pdf", plot = boxplots, width = 15, height = 10)
 # showing that places with summer temperatures higher than 30°C are probably less optimal for this pine species because of the heat conditions
 # whilst winter temperature seems to confine the pine to locations with a rough minimum temperature around 0°C (land surface temperature)
 # it seems as if elevation and surface temperature might be two conditions limiting the pine in colonizing further habitats
-
