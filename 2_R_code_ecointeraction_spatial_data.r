@@ -1,5 +1,5 @@
 
-### ecological interaction''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+### ecological interaction''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # this is a code for investigating relationships among ecological variables
 
 # install necessary packages using function -install.packages(""), in this case sp, used for managing spatial data 
@@ -60,7 +60,7 @@ pairs(~ cadmium + lead + zinc, data = meuse, col = "darkorange2", pch = 23)
 pairs(~ cadmium + lead + zinc, data = meuse, col = "darkorange2", pch = 23, cex = 2)
 
 
-### Spatial data analysis
+### Spatial data analysis ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # we want to use the dataset meuse for spatial analysis
 # the function ~coordinates() either creates a spatial object, or in this case retrieves its coordinates
 coordinates(meuse) = ~x+y
