@@ -1,4 +1,4 @@
-### first R introduction to monitoring'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+### first R introduction to monitoring''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # this is a first code script to get a basic understanding of R and how to use it
 
 # first create an array using the concatenate function ~c()
