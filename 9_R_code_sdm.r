@@ -1,3 +1,4 @@
+### SDM data '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''' 
 # this script is used to look at the SDM package (species distribution modeling)
 
 setwd("C:/Rstudio/monitoring")
@@ -34,7 +35,8 @@ plot(absence)
 plot(presence, col ="darkgreen", pch = 15)
 points(absence, col = "lightblue", pch = 19)
 
-# we add more data, this time it is raster data, the predictors (determinantes of species absence/presence, physical conditions like temp, rain, elevation etc)
+# we add more data, this time it is raster data, the predictors (determinantes of species absence/presence, 
+# physical conditions like temp, rain, elevation etc)
 # for this look at folder from above, we look at ascii files (~comma separated image file)
 path <- system.file("external", package = "sdm")
 
@@ -61,7 +63,7 @@ points(species[species$Occurrence == 1,], pch=15)
 plot(preds$vegetation, col=cl)
 points(species[species$Occurrence == 1,], pch=15)
 
-#### create model
+### create model '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # we want to establish relationships between the point data and the predictors to complete the model
 # first we set the training data (objects = species, points) and the predictors for the sdm into a new object containing all the data
 datasdm <- sdmData(train=species, predictors=preds)
