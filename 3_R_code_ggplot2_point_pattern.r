@@ -1,7 +1,7 @@
 
-### 3) ggplot2 and interpolation of case data
+# ggplot2 and interpolation of case data ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # this file is used to analyse the initial spatial spread of the coronavirus using graphs from the package ggplot2
-###### 1st getting started with the package ggplot2
+# 1st getting started with the package ggplot2
 
 # download and load necessary package
 install.packages("ggplot2")
@@ -26,10 +26,12 @@ summary(corona)
 # use ggplot2 to create visual representations of the spread: use function ~ggplot to create graph
 ggplot(corona, aes(x = virus, y = death)) + geom_point() 
 # data = corona (dataframe), aes = aesthetics: view of the graph, which variables?
-# use function ~geom_point() to add a geometrical reference to the data, in this case geometric point format (this makes sense for this data, as points were measured in space)
+# use function ~geom_point() to add a geometrical reference to the data, in this case geometric point format 
+# this makes sense for this data, as points were measured in space
 
 # to change the look of the graph we add arguments in the geom_point function
-ggplot(corona, aes(x = virus, y = death)) + geom_point(size = 4,  col = "cornflowerblue", pch = 11) # changes the size and color and symbol of the point
+ggplot(corona, aes(x = virus, y = death)) + geom_point(size = 4,  col = "cornflowerblue", pch = 11) 
+# pch changes the size and color and symbol of the point
 
 # if instead we wanted to visualize lines (doesn't make sense with this data) use function ~geom_line
 ggplot(corona, aes(x = virus, y = death)) + geom_line()
@@ -40,17 +42,20 @@ ggplot(corona, aes(x = virus, y = death)) + geom_polygon()
 # you can use ggplot2 to connect multiple geometric shapes simply by adding more functions with + 
 ggplot(corona, aes(x = virus, y = death)) + geom_point + geom_line + geom_polygon()
 
-####### 2nd now on to real data: case numbers by country from the beginning of the covid-19 pandemic (load data from external source)
+# 2nd now on to real data: case numbers by country from the beginning of the covid-19 pandemic (load data from external source)
 
 # recall the relevant packages using function ~library()
 library(ggplot2)
 library(spatstat) # spatial statistics
 
-# set a working directory using function ~setwd() for R to save all documents, files, objects etc in: in this case it is in the folder monitoring (see path below)
+# set a working directory using function ~setwd() for R to save all documents, files, objects etc in: 
+# in this case it is in the folder monitoring (see path below)
 setwd("C:/RStudio/monitoring")
 
-# now we can import the datafolder (downloaded from virtuale into wd set above) using the function ~read.table() to import data directly from the wd
-covid <- read.table("covid_agg.csv", header = TRUE)  # to import the head of the doc as a head, which doesn't contain data in R aswell, set the header = TRUE
+# now we can import the datafolder (downloaded from virtuale into wd set above) 
+# using the function ~read.table() to import data directly from the wd
+covid <- read.table("covid_agg.csv", header = TRUE)  # to import the head of the doc as a head, 
+# which doesn't contain data in R aswell, set the header = TRUE
 
 # get a first look at the data we just imported
 covid # prints the whole dataset in the console
@@ -63,9 +68,11 @@ ggplot(covid, aes(x = lon, y = lat)) + geom_point()
 ggplot(covid, aes(x = lon, y = lat, size = cases)) + geom_point()
 
 ### let's see the density of the coronavirus cases - Point pattern analysis
-# use function ~ppp() from the spatstat package to create a planar point pattern, which explains to R that we are working on a geographical lattice (lat and lon) as well as explain the extent  
+# use function ~ppp() from the spatstat package to create a planar point pattern, which explains to R that we are working 
+# on a geographical lattice (lat and lon) as well as explain the extent  
 attach(covid) # let's first attach the dataset to make sepcification easier (don't need $ to specify column names lat, lon etc.)
-covid_planar <- ppp(lon, lat, c(-180, 180), c(-90, 90)) # lon and lat are x and y, function ~c() is used to tell R the range to be used in the form of an array
+covid_planar <- ppp(lon, lat, c(-180, 180), c(-90, 90)) # lon and lat are x and y, 
+# function ~c() is used to tell R the range to be used in the form of an array
 plot(covid_planar) # take a look at the ppp object created 
 
 # to now print a density map of the case numbers by country use function ~density()
@@ -87,7 +94,8 @@ library(rgdal)
 # after downloading the folder ne 10m coastline, open it using function ~readOGR, which reads a vector map into a spatial object
 coastlines <- readOGR("ne_10m_coastline.shp")
 
-# now to combine the density map and the country borders we create a new color gradient, plot the density map and insert the points from covid_planar as well as the coastlines
+# now to combine the density map and the country borders we create a new color gradient, plot the density map and 
+# insert the points from covid_planar as well as the coastlines
 cl <- colorRampPalette(c('lightskyblue4','chartreuse4','goldenrod3','lightsalmon3','sienna4'))(100) # 
 plot(density_map, col = cl)  # plot the density map
 points(covid_planar, pch = 1, col = 'blue', cex = 0.8) # add the points
@@ -108,13 +116,15 @@ points(covid_planar, pch = 4, col = 'black', cex = 1)
 plot(coastlines, add = TRUE) 
 dev.off()
 
-### interpolate case data 
-# but these maps simply show the density based on the points, obviously in Europe there is a high country density = highest density of points
+### interpolate case data '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+# but these maps simply show the density based on the points, obviously in Europe there is 
+# a high country density = highest density of points
 # however the parameter abundance is much more informative, as it actually interpolates the number of cases
 
-###### 3rd we can do this using the function ~marks(), which assigns data to the points given in covid_planar
+# 3rd we can do this using the function ~marks(), which assigns data to the points given in covid_planar
 attach(covid)
-marks(covid_planar) <- cases  # cases is the name of the relevant variable in the original array covid, which we attach here, as covid_planar is simply a list of points
+marks(covid_planar) <- cases  # cases is the name of the relevant variable in the original array covid,
+# which we attach here, as covid_planar is simply a list of points
 
 # using the function ~Smooth it interpolates the point data given in covid_planar and assigns it the new name map_cases
 map_cases <- Smooth(covid_planar)
@@ -134,7 +144,8 @@ s_points <- st_as_sf(covid, coords = c("lon", "lat"))
 # create a new color palette
 c1 <- colorRampPalette(c("antiquewhite4", "aquamarine4", "darkslategray", "coral4", "firebrick3"))(100)
 plot(map_cases, col = c1) # plot the smoothed case map
-plot(s_points, cex = s_points$cases/10000, col = "purple4", lwd = 3, add = T) # add circles around the countries with high case numbers, depending on their absolute value
+plot(s_points, cex = s_points$cases/10000, col = "purple4", lwd = 3, add = T) # add circles around the countries with high case numbers, 
+# depending on their absolute value
 
 # now we add on the coastlines to the smoothed map above
 coastlines <- readOGR("ne_10m_coastline.shp")
