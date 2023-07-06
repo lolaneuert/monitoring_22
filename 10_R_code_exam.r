@@ -97,6 +97,10 @@ dev.off()
 # https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1-0-and-derived-products/eu-dem-v1.0?tab=download
 # downloaded from land monitoring service
 # images covering europe are created through automated data fusion process using SRTM and ASTER GDEM digital surface model
+# SRTM = Shuttle Radar Topography Mission, specially modified radar system that flew on board the Space Shuttle Endeavour in 2000
+# ASTER = Advanced Spaceborne Thermal Emission and Reflection Radiometer, onboard the Terra satellite launched by NASA in 1999
+# GDEM = Global Digital Elevation Model, released in 2009, most complete mapping of the earth ever made, covering 99% of its surface
+# brick function creates a raster object
 dem_alps_brick <- brick("dem.tif") 
 # the data is given as elevation in meters above sea level, 
 # it is already in the same projection as the tree data (EPSG 3035)
@@ -140,6 +144,7 @@ dev.off() # closes the window with the map
 # we import land surface temperature from copernicus, VITO the data is from the 01.07.2015
 # https://land.copernicus.vgt.vito.be/PDF/portal/Application.html#Browse;Root=520752;Time=NORMAL,NORMAL,-1,,,-1,,
 # data derived from constellation of geostationary satellites (Meteosat Second Generation for Europe) and shows global coverage
+# Meteosat Second Generation includes Meteosat 8-11 (MSG 1-4), 10 & 11 cover Europe and Africa
 # brick function creates a raster object
 lst_010715 <- brick("LST_201507011300.nc", varname = "LST")
 
