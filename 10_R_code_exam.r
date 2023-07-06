@@ -290,7 +290,7 @@ Pinus_clean <- na.omit(Pinus)
 # for the actual correlation a pearson test is conducted
 # 1st Hyp: it is assumed that summer land surface temperature is negatively correlated with digital elevation 
 # (the lower down, the warmer)
-# 2nd Hyp: it is assumed that winter land surface temperature is positively correlated with the elevation 
+# 2nd Hyp: it is assumed that winter land surface temperature is also negatively correlated with the elevation 
 # (the further up, the colder)
 
 # 1st Hyp
@@ -299,8 +299,8 @@ cor.test(Pinus_clean$LST_summer, Pinus_clean$DEM, alternative = "less")
 # thereby not seeming to be statistically significant
 # however the correlation is estimated to be negative with -0.0743
 
-cor.test(Pinus_clean$LST_winter, Pinus_clean$DEM, alternative = "greater")
-# Pearson's product-moment correlation gives a p-value of 0.4066, which is not significant either
+cor.test(Pinus_clean$LST_winter, Pinus_clean$DEM, alternative = "less")
+# Pearson's product-moment correlation gives a p-value of 0.5934, which is not significant either
 # the correlation seems to be slightly positive with 0.0203
 
 # scatterplots to visualize the correlations
@@ -326,7 +326,7 @@ ggsave(filename = "scatter_hyp2.pdf", plot = scatter_hyp2, width = 15, height = 
 
 # the two scatterplots show very unclear results, and do not seem to show a correlation between either of the parameters
 # the first scatterplot however shows a cloud of temperature that does not seem to lay in any regard to the measured elevation,
-# the second scatterplot shows a rather random distribution of temperatures overall
+# the second scatterplot shows a rather random distribution of temperatures overall, no clear trend
 
 # which of the parameters shows larger range, more precise vales at points? in total/in points of pine occurrence?
 # this could lead to assumptions about which of them is more relevant for the occurrence of pine
