@@ -96,7 +96,7 @@ coastlines <- readOGR("ne_10m_coastline.shp")
 
 # now to combine the density map and the country borders we create a new color gradient, plot the density map and 
 # insert the points from covid_planar as well as the coastlines
-cl <- colorRampPalette(c('lightskyblue4','chartreuse4','goldenrod3','lightsalmon3','sienna4'))(100) # 
+cl <- colorRampPalette(c('lightskyblue4','chartreuse4','goldenrod3','lightsalmon3','sienna4'))(100)
 plot(density_map, col = cl)  # plot the density map
 points(covid_planar, pch = 1, col = 'blue', cex = 0.8) # add the points
 plot(coastlines, add = TRUE) # add the coastline
@@ -144,8 +144,8 @@ s_points <- st_as_sf(covid, coords = c("lon", "lat"))
 # create a new color palette
 c1 <- colorRampPalette(c("antiquewhite4", "aquamarine4", "darkslategray", "coral4", "firebrick3"))(100)
 plot(map_cases, col = c1) # plot the smoothed case map
-plot(s_points, cex = s_points$cases/10000, col = "purple4", lwd = 3, add = T) # add circles around the countries with high case numbers, 
-# depending on their absolute value
+plot(s_points, cex = s_points$cases/10000, col = "purple4", lwd = 3, add = T) 
+# add circles around the countries with high case numbers, depending on their absolute value
 
 # now we add on the coastlines to the smoothed map above
 coastlines <- readOGR("ne_10m_coastline.shp")
