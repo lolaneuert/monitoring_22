@@ -95,6 +95,8 @@ dev.off()
 
 # we want to underlay the species distribution with a digital elevation model, this is derived from copernicus data 
 # https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1-0-and-derived-products/eu-dem-v1.0?tab=download
+# downloaded from land monitoring service
+# images covering europe are created through automated data fusion process using SRTM and ASTER GDEM digital surface model
 dem_alps_brick <- brick("dem.tif") 
 # the data is given as elevation in meters above sea level, 
 # it is already in the same projection as the tree data (EPSG 3035)
@@ -135,8 +137,9 @@ dev.off() # closes the window with the map
 
 ### LAND SURFACE TEMPERATURE DATA''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-# we import land surface temperature from copernicus, the data is from the 01.07.2015
+# we import land surface temperature from copernicus, VITO the data is from the 01.07.2015
 # https://land.copernicus.vgt.vito.be/PDF/portal/Application.html#Browse;Root=520752;Time=NORMAL,NORMAL,-1,,,-1,,
+# data derived from constellation of geostationary satellites (Meteosat Second Generation for Europe) and shows global coverage
 # brick function creates a raster object
 lst_010715 <- brick("LST_201507011300.nc", varname = "LST")
 
@@ -157,7 +160,7 @@ lst_jul <- lst_crop_alps_jul - 272.15
 
 # to compare the upper and lower temperature boundaries in the observed pine locations 
 # in addition to the summer picture we load a january picture of the same area and year
-# import lst from copernicus, deridata is from the 01.01.2015
+# import lst from copernicus, derived data is from the 01.01.2015
 lst_010115 <- brick("LST_201501011300.nc", varname = "LST") # brick function creates a raster object
 
 lst_crop_jan <- crop(lst_010115, ext_alps) # again preliminary crop
