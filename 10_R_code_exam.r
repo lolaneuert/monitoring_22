@@ -325,8 +325,7 @@ ggsave(filename = "scatter_hyp1.pdf", plot = scatter_hyp1, width = 15, height = 
 ggsave(filename = "scatter_hyp2.pdf", plot = scatter_hyp2, width = 15, height = 10)
 
 # the two scatterplots show very unclear results, and do not seem to show a correlation between either of the parameters
-# the first scatterplot however shows a cloud of temperatures that do not seem to lay in any regard to the measured elevation,
-## also they seem rather high varying around 30°C, but since it is summer this could be explained? (also in ground rather constant temperatures)
+# the first scatterplot however shows a cloud of temperature that does not seem to lay in any regard to the measured elevation,
 # the second scatterplot shows a rather random distribution of temperatures overall
 
 # which of the parameters shows larger range, more precise vales at points? in total/in points of pine occurrence?
@@ -358,6 +357,7 @@ ggsave(filename = "boxplots.pdf", plot = boxplots, width = 15, height = 10)
 
 # from the boxplots one can clearly see that the majority of observed Pinus cembra observations
 # lie within 1750-2000m of elevation, at a land surface temperature of around 30°C in July, and around 0°C in January
-# showing that places with summer temperatures higher than 30°C are probably less optimal for this pine species because of the heat conditions
-# whilst winter temperature seems to confine the pine to locations with a rough minimum temperature around 0°C (land surface temperature)
+# showing that places with summer temperatures higher than 30°C are probably less optimal for this pine species 
+# because of the heat conditions, whilst winter temperature seems to confine the pine to locations 
+# with a rough minimum temperature around 0°C (land surface temperature)
 # it seems as if elevation and surface temperature might be two conditions limiting the pine in colonizing further habitats
