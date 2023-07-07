@@ -5,6 +5,7 @@
 # load useful packages
 library(raster)
 library(ggplot2)
+library(stats)
 library(patchwork)
 library(dplyr)
 library(rgdal)
